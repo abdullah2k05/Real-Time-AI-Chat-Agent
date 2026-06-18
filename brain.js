@@ -49,7 +49,7 @@ const handelUserInput = async (userInput) => {
       model: "openai/gpt-oss-120b",
     });
 
-    console.log("\nAI:", responses.choices?.message?.content, "\n");
+    console.log("\nAI:", responses.choices?.[0]?.message?.content, "\n");
   } catch (err) {
     console.error("Error handling user input:", err);
   }
