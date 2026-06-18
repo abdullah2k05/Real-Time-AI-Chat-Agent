@@ -18,25 +18,27 @@ If user asks irrelevant questions, guide them back to store support.
 
 console.log(`You are a helpful customer support assistant for a ${Store_name}`);
 
-//Handle User INput via CLI
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
+// ----------------AS WE SHIFTED FROM CLI TO EXPRESS ROUTE SO WE DISABLE IT -------------------------
+
+// //Handle User INput via CLI
+// const rl = readline.createInterface({
+//   input: process.stdin,
+//   output: process.stdout,
+// });
 
 //Get input
-let userInput = "";
-function getUserInput() {
-  rl.question("You:", async (userInput) => {
-    if (userInput.toLowerCase() === "exit") {
-      console.log("Exiting...");
-      rl.close();
-      return;
-    }
-    await handelUserInput(userInput);
-    getUserInput();
-  });
-}
+// let userInput = "";
+// function getUserInput() {
+//   rl.question("You:", async (userInput) => {
+//     if (userInput.toLowerCase() === "exit") {
+//       console.log("Exiting...");
+//       rl.close();
+//       return;
+//     }
+//     await handelUserInput(userInput);
+//     getUserInput();
+//   });
+// }
 
 // Handle User input via CLI/Socket/Frontend
 const handelUserInput = async (userInput) => {
