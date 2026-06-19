@@ -84,7 +84,7 @@ app.post("/chat", verifySessionToken, async (req, res) => {
 
     //  call the brain
     const response = await handleUserInput(message, history);
-    console.log(response);
+    // console.log(response);
     // save the chat again in redis
     await saveChatMessage(userID, message, response);
 

@@ -1,3 +1,5 @@
+const STORAGE_KEY = "ai_widget_chat";
+
 (function () {
   // Inject Font
   const fontLink = document.createElement("link");
@@ -292,10 +294,41 @@
     }
   };
 
+  // LOAD CHAT AND SAVE IT FOR 5 MINS In THE WIDGET
+  function loadChat(){
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (!saved) {
+      return [];
+    }
+
+    const data = JSON.parse(saved);
+
+    if(Date.now() - data.time > 5 * 60 * 1000){
+      localStorage.removeItem(STORAGE_KEY);
+      return [];
+    }
+
+    return data.messages;
+  }
+
+  function formatText(text) {
+    if (!text) return "";
+    // Escape HTML first to prevent XSS
+    let escaped = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    // Parse basic Markdown
+    return escaped
+      .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>") // Bold (**text**)
+      .replace(/\*(.*?)\*/g, "<em>$1</em>")             // Italic (*text*)
+      .replace(/\n/g, "<br>");                          // New lines to HTML line breaks
+  }
+
   function addMessage(text, type) {
     const div = document.createElement("div");
     div.className = "ai-msg-bubble " + (type === "user" ? "ai-msg-user" : "ai-msg-bot");
-    div.innerText = text;
+    
+    // Instead of innerText, use innerHTML with our safe formatter
+    div.innerHTML = formatText(text);
+    
     messagesContainer.appendChild(div);
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
     return div;
