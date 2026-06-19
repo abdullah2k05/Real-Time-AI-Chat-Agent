@@ -41,7 +41,7 @@ console.log(`You are a helpful customer support assistant for a ${Store_name}`);
 // }
 
 // Handle User input via CLI/Socket/Frontend
-const handelUserInput = async (userInput) => {
+const handleUserInput = async (userInput) => {
   try {
     const responses = await groq.chat.completions.create({
       messages: [
@@ -58,4 +58,6 @@ const handelUserInput = async (userInput) => {
 };
 
 console.log("Welcome to the AI Live Chat! Type 'exit' to quit.\n");
-getUserInput();
+// getUserInput();
+
+export { handleUserInput };

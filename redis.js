@@ -1,4 +1,7 @@
 import { createClient } from "redis";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const MAXMESSAGES = 30;
 
