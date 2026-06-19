@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import jwt from "jsonwebtoken";
 import session from "express-session";
+import cookieParser from "cookie-parser";
 
 import { handleUserInput } from "./brain.js";
 import { getChatHistory, saveChatMessage, clearChatHistory } from "./redis.js";
@@ -10,8 +11,12 @@ import { getChatHistory, saveChatMessage, clearChatHistory } from "./redis.js";
 dotenv.config();
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: true,
+  credentials: true
+}));
 app.use(express.json());
+app.use(cookieParser());
 app.use(
   session({
     secret: process.env.SESSION,
@@ -26,17 +31,18 @@ const storeName = process.env.SHOP_NAME || "Your Store Name";
 const activeSessions = {};
 // --------------Middleware to verify session token ----------------
 const verifySessionToken = (req, res, next) => {
-  const token = req.cookies?.auth_token;
+  const token = req.cookies?.auth_token || (req.headers.authorization?.startsWith("Bearer ") ? req.headers.authorization.split(" ")[1] : null);
+  
   if (!token) {
     return res.status(401).json({ error: "Unauthorized" });
+  }
 
-    try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      req.userID = decoded.userID;
-      next();
-    } catch (err) {
-      return res.status(401).json({ error: "Invalid token" });
-    }
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.userID = decoded.userID;
+    next();
+  } catch (err) {
+    return res.status(401).json({ error: "Invalid token" });
   }
 };
 
@@ -60,7 +66,7 @@ app.post("/api/auth/start", (req, res) => {
     sameSite: "Strict",
   });
 
-  res.json({ success: true, token });
+  res.json({ success: true , token });
 });
 
 // 2: Start of the session
@@ -78,12 +84,12 @@ app.post("/chat", verifySessionToken, async (req, res) => {
 
     //  call the brain
     const response = await handleUserInput(message, history);
-
+    console.log(response);
     // save the chat again in redis
     await saveChatMessage(userID, message, response);
 
     //time to return the response to the frontend
-    res.json({ reply: response, userID });
+    res.json({ response, userID });
   } catch (err) {
     console.error("Error handling chat:", err);
     res.status(500).json({ error: "Internal Server Error" });

@@ -5,12 +5,12 @@ dotenv.config();
 
 const MAXMESSAGES = 30;
 
-const redisClient = createClient({
-  url: process.env.REDIS_URL,
-});
+const redisClient = createClient();
 
+// forgot this
+// await redisClient.connect();
 // Redis connection logs
-
+await redisClient.connect();
 redisClient.on("connect", () => {
   console.log("Redis connected");
 });

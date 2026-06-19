@@ -1,5 +1,9 @@
 import "dotenv/config";
 import Groq from "groq-sdk";
+import express from "express";
+import cors from "cors";
+import session from "express-session";
+import jwt from "jsonwebtoken";
 import readline from "readline";
 
 // Setup Grok
@@ -50,14 +54,14 @@ const handleUserInput = async (userInput) => {
       ],
       model: "openai/gpt-oss-120b",
     });
-
-    console.log("\nAI:", responses.choices?.[0]?.message?.content, "\n");
+    const response = responses.choices?.[0]?.message?.content;
+    return response;
   } catch (err) {
     console.error("Error handling user input:", err);
   }
 };
 
-console.log("Welcome to the AI Live Chat! Type 'exit' to quit.\n");
+
 // getUserInput();
 
 export { handleUserInput };
