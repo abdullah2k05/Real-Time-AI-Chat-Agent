@@ -7,10 +7,7 @@ const MAXMESSAGES = 30;
 
 const redisClient = createClient();
 
-// forgot this
-// await redisClient.connect();
-// Redis connection logs
-await redisClient.connect();
+
 redisClient.on("connect", () => {
   console.log("Redis connected");
 });
@@ -27,6 +24,9 @@ export async function connectRedis() {
   }
 }
 
+if (!redisClient.isOpen) {
+  await connectRedis();
+}
 //Build consistent Redis key for each user
 
 function getChatKey(userID) {
@@ -39,13 +39,16 @@ export async function getChatHistory(userID) {
   try {
     const key = getChatKey(userID);
 
-    const history = await redisClient.get(key);
+    let history = [];
 
-    if (!history) {
-      return [];
+    try {
+          const raw = await redisClient.get(key);
+      history = raw ? JSON.parse(raw) : [];
+    } catch (e) {
+      history = [];
     }
 
-    return JSON.parse(history);
+    return history;
   } catch (err) {
     console.error("Error getting chat history:", err);
     return [];
@@ -96,3 +99,6 @@ export async function clearChatHistory(userID) {
     console.error("Error clearing chat history:", err);
   }
 }
+
+
+await connectRedis();

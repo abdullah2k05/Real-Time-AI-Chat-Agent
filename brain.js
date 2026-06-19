@@ -45,13 +45,15 @@ console.log(`You are a helpful customer support assistant for a ${Store_name}`);
 // }
 
 // Handle User input via CLI/Socket/Frontend
-const handleUserInput = async (userInput) => {
+const handleUserInput = async (userInput, history = []) => {
   try {
+    const messages = [
+      {role: "system", content: SYSTEM_PROMPT},
+      ...history,
+      {role: "user", content: userInput},
+    ]
     const responses = await groq.chat.completions.create({
-      messages: [
-        { role: "system", content: SYSTEM_PROMPT },
-        { role: "user", content: userInput },
-      ],
+      messages,
       model: "openai/gpt-oss-120b",
     });
     const response = responses.choices?.[0]?.message?.content;
